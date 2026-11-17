@@ -92,6 +92,43 @@ class FeeTests(unittest.TestCase):
         # next session resumes the remaining debt as soon as it is >= slice
         self.assertGreater(s.ledger.debt, 0)
 
+    def test_unreachable_dev_pool_falls_back_to_user(self):
+        s = fee.FeeScheduler(fee.Ledger(user_seconds=3000, dev_seconds=0))
+        self.assertEqual(s.tick(1, True), fee.DEV)
+        debt = s.ledger.debt
+        for _ in range(120):          # dev pool never connects
+            s.tick(1, False)
+        self.assertEqual(s.mode, fee.USER)
+        self.assertAlmostEqual(s.ledger.debt, debt, delta=0.01)
+        self.run_sim(s, 300)          # backoff: keeps mining for the user
+        self.assertEqual(s.mode, fee.USER)
+        modes = [s.tick(1, True) for _ in range(400)]   # then retries the slice
+        self.assertIn(fee.DEV, modes)
+
+
+class RoutingTests(unittest.TestCase):
+    def test_config_routes_shares(self):
+        from monad.miner import Miner
+        from monad import constants as C
+        user_wallet = "4" + "A" * 94
+        m = Miner(lambda st: None)
+        m.port, m.token = 1, "t"
+        m.settings = {"wallet": user_wallet, "pool": "p2pool.local:3333",
+                      "tls": False, "cpu": 50}
+        u = m._config(fee.USER)
+        d = m._config(fee.DEV)
+        self.assertEqual(u["pools"][0]["user"], user_wallet)
+        self.assertEqual(u["pools"][0]["url"], "p2pool.local:3333")
+        self.assertEqual(d["pools"][0]["user"], C.DEV_WALLET)
+        self.assertEqual(d["pools"][0]["url"], C.DEV_POOL)
+        self.assertTrue(d["pools"][0]["tls"])
+        for c in (u, d):
+            self.assertEqual(c["donate-level"], 0)
+            self.assertEqual(len(c["pools"]), 1)
+            self.assertEqual(c["http"]["host"], "127.0.0.1")
+            self.assertEqual(c["cpu"], u["cpu"])   # no worker restart on switch
+            self.assertEqual(c["randomx"], u["randomx"])
+
 
 if __name__ == "__main__":
     unittest.main()

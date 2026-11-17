@@ -194,6 +194,8 @@ class Miner:
         while not self._stop.wait(POLL_SECONDS):
             now = time.monotonic()
             dt, last = now - last, now
+            if self._stop.is_set():
+                return
             if not self.running:
                 code = self.proc.returncode if self.proc else None
                 self.on_update({"state": "crashed", "code": code,

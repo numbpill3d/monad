@@ -17,6 +17,10 @@ from dataclasses import dataclass, asdict
 
 FEE_RATE = 0.02
 SLICE_SECONDS = 60.0
+# If the developer pool can't be reached, give up after this long, go back
+# to the user's pool (the debt is kept, nothing is billed) and retry later.
+DEV_CONNECT_TIMEOUT = 90.0
+DEV_RETRY_BACKOFF = 600.0
 
 USER = "user"
 DEV = "dev"
@@ -43,25 +47,40 @@ class FeeScheduler:
     def __init__(self, ledger: Ledger | None = None):
         self.ledger = ledger or Ledger()
         self.mode = USER
+        self._dev_waiting = 0.0
+        self._backoff = 0.0
 
     def tick(self, dt: float, hashing: bool) -> str:
         """Account dt seconds in the current mode; return the mode to use next."""
         if hashing and dt > 0:
             if self.mode == DEV:
                 self.ledger.dev_seconds += dt
+                self._dev_waiting = 0.0
             else:
                 self.ledger.user_seconds += dt
+        elif self.mode == DEV:
+            self._dev_waiting += max(dt, 0.0)
+        if self.mode == USER and self._backoff > 0:
+            self._backoff = max(0.0, self._backoff - max(dt, 0.0))
         debt = self.ledger.debt
-        if self.mode == USER and debt >= SLICE_SECONDS:
+        if self.mode == USER and debt >= SLICE_SECONDS and self._backoff <= 0:
             self.mode = DEV
+            self._dev_waiting = 0.0
         elif self.mode == DEV and debt <= 0:
             self.mode = USER
+        elif self.mode == DEV and self._dev_waiting >= DEV_CONNECT_TIMEOUT:
+            # developer pool unreachable: never hold the user's miner hostage
+            self.mode = USER
+            self._dev_waiting = 0.0
+            self._backoff = DEV_RETRY_BACKOFF
         return self.mode
 
     def reset_session(self):
         """Called when mining stops: the next session starts on the user's pool;
         any remaining debt is carried over and paid later."""
         self.mode = USER
+        self._dev_waiting = 0.0
+        self._backoff = 0.0
 
     @property
     def dev_seconds_left(self) -> float:
