@@ -11,7 +11,7 @@ depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'libuv' 'hwloc' 'openssl'
 makedepends=('cmake')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/numbpill3d/monad/archive/refs/tags/v$pkgver.tar.gz"
         "xmrig-$_xmrigver.tar.gz::https://github.com/xmrig/xmrig/archive/refs/tags/v$_xmrigver.tar.gz")
-sha256sums=('SKIP'
+sha256sums=('1094c4d1d8b066ae6161aabad5c71be86a57f7966e28e381cbc0482bff9b5d6e'
             '5005144e78571f26586410c2b2ede2b0c72afe22f97f1708ea24cfb253c3939b')
 
 prepare() {

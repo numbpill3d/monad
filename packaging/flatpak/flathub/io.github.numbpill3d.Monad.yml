@@ -1,6 +1,6 @@
 app-id: io.github.numbpill3d.Monad
 runtime: org.gnome.Platform
-runtime-version: '50'
+runtime-version: '51'
 sdk: org.gnome.Sdk
 command: monad
 finish-args:
@@ -76,4 +76,4 @@ modules:
       - type: git
         url: https://github.com/numbpill3d/monad.git
         tag: v1.0.0
-        commit: COMMIT_SHA_OF_v1.0.0
+        commit: b56cbd61ee4ffabec1311e46d7a17bd9f4b9828b
