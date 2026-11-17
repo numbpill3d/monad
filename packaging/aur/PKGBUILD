@@ -22,6 +22,8 @@ prepare() {
 }
 
 build() {
+  CFLAGS+=" -ffile-prefix-map=$srcdir=."
+  CXXFLAGS+=" -ffile-prefix-map=$srcdir=."
   cmake -S "xmrig-$_xmrigver" -B build \
     -DCMAKE_BUILD_TYPE=None \
     -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_HWLOC=ON
