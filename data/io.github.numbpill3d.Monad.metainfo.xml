@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 numbpill3d -->
+<component type="desktop-application">
+  <id>io.github.numbpill3d.Monad</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Monad</name>
+  <summary>Mine Monero with a minimal interface</summary>
+  <developer id="io.github.numbpill3d">
+    <name>numbpill3d</name>
+  </developer>
+  <description>
+    <p>
+      Monad is a minimalist Monero (XMR) miner. Paste your wallet address,
+      press Start, and watch the hashrate. It uses the XMRig RandomX engine
+      on your CPU and works with any Stratum pool.
+    </p>
+    <p>Developer fee: 2% of hashing time (about one minute in every fifty) is
+      mined to the developer's wallet on pool.supportxmr.com to fund
+      development. The status line shows “Developer fee” while it runs. Time
+      is only counted while actually hashing. XMRig's own donation is disabled,
+      so the total fee is 2%.</p>
+    <ul>
+      <li>One-click start and stop, nothing runs in the background</li>
+      <li>Validates Monero addresses before mining</li>
+      <li>Adjustable CPU usage</li>
+      <li>TLS pool connections</li>
+    </ul>
+    <p>Mining uses a lot of electricity and makes your CPU run hot. Only mine on hardware you own or are allowed to use.</p>
+  </description>
+  <launchable type="desktop-id">io.github.numbpill3d.Monad.desktop</launchable>
+  <url type="homepage">https://github.com/numbpill3d/monad</url>
+  <url type="bugtracker">https://github.com/numbpill3d/monad/issues</url>
+  <url type="vcs-browser">https://github.com/numbpill3d/monad</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/numbpill3d/monad/main/data/screenshots/main.png</image>
+      <caption>Mining to your wallet</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/numbpill3d/monad/main/data/screenshots/fee.png</image>
+      <caption>The developer fee is explained before the first start</caption>
+    </screenshot>
+  </screenshots>
+  <branding>
+    <color type="primary" scheme_preference="light">#f6c4a8</color>
+    <color type="primary" scheme_preference="dark">#3a1d0e</color>
+  </branding>
+  <content_rating type="oars-1.1"/>
+  <recommends>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <memory>3072</memory>
+  </recommends>
+  <supports>
+    <control>touch</control>
+  </supports>
+  <categories>
+    <category>Utility</category>
+    <category>Finance</category>
+  </categories>
+  <keywords>
+    <keyword>monero</keyword>
+    <keyword>mining</keyword>
+    <keyword>xmr</keyword>
+  </keywords>
+  <releases>
+    <release version="1.0.0" date="2026-11-17">
+      <description>
+        <p>First release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

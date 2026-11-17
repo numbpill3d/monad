@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Monad
+GenericName=Monero Miner
+Comment=Mine Monero with a minimal interface
+Exec=monad
+Icon=io.github.numbpill3d.Monad
+Terminal=false
+Categories=Utility;Finance;
+Keywords=monero;xmr;mining;miner;crypto;randomx;
+StartupNotify=true
+DBusActivatable=false

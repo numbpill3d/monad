@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.flatpak-builder/
+build-dir/
+repo/
+packaging/aur/src/
+packaging/aur/pkg/
+packaging/aur/*.tar.*

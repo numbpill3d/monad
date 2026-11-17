@@ -1,0 +1,78 @@
+app-id: io.github.numbpill3d.Monad
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: monad
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /lib/cmake
+  - /share/man
+  - /share/doc
+  - '*.a'
+  - '*.la'
+modules:
+  - name: libuv
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DLIBUV_BUILD_TESTS=OFF
+      - -DLIBUV_BUILD_BENCH=OFF
+    sources:
+      - type: archive
+        url: https://dist.libuv.org/dist/v1.52.1/libuv-v1.52.1.tar.gz
+        sha256: 66d511b9e6e334c0e62279eb234fbfb2b3110b1479c09b95b44c7afca8cff9e7
+
+  - name: hwloc
+    config-opts:
+      - --disable-static
+      - --disable-cairo
+      - --disable-libxml2
+      - --disable-io
+      - --disable-plugins
+      - --disable-libudev
+      - --disable-readme
+    cleanup:
+      - /bin
+      - /sbin
+      - /share
+    sources:
+      - type: archive
+        url: https://download.open-mpi.org/release/hwloc/v2.12/hwloc-2.12.2.tar.bz2
+        sha256: 563e61d70febb514138af0fac36b97621e01a4aacbca07b86e7bd95b85055ba0
+
+  - name: xmrig
+    buildsystem: simple
+    build-commands:
+      - cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/app
+        -DWITH_OPENCL=OFF -DWITH_CUDA=OFF -DWITH_HWLOC=ON -DWITH_TLS=ON -DWITH_HTTP=ON
+        -DHWLOC_INCLUDE_DIR=/app/include -DHWLOC_LIBRARY=/app/lib/libhwloc.so
+        -DUV_INCLUDE_DIR=/app/include -DUV_LIBRARY=/app/lib/libuv.so
+      - ninja -C build
+      - install -Dm755 build/xmrig /app/libexec/monad/xmrig
+      - install -Dm644 LICENSE /app/share/licenses/io.github.numbpill3d.Monad/XMRIG-LICENSE
+    sources:
+      - type: archive
+        url: https://github.com/xmrig/xmrig/archive/refs/tags/v6.26.0.tar.gz
+        sha256: 5005144e78571f26586410c2b2ede2b0c72afe22f97f1708ea24cfb253c3939b
+      - type: patch
+        path: xmrig-disable-donation.patch
+      - type: patch
+        path: xmrig-openssl4.patch
+
+  - name: monad
+    buildsystem: simple
+    build-commands:
+      - make install PREFIX=/app
+      - install -Dm644 LICENSE /app/share/licenses/io.github.numbpill3d.Monad/LICENSE
+    sources:
+      - type: git
+        url: https://github.com/numbpill3d/monad.git
+        tag: v1.0.0
+        commit: COMMIT_SHA_OF_v1.0.0
